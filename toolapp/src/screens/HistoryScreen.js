@@ -6,7 +6,7 @@ import {
   FlatList, 
   TouchableOpacity, 
   TextInput,
-  LayoutAnimation, // Para animaciones suaves al borrar
+  LayoutAnimation, 
   Platform,
   UIManager
 } from 'react-native';
@@ -47,10 +47,9 @@ const INITIAL_DATA = [
 
 export default function HistoryScreen({ navigation }) {
   // 1. ESTADOS
-  const [historyData, setHistoryData] = useState(INITIAL_DATA); // La lista de datos
-  const [searchText, setSearchText] = useState(''); // Texto del buscador
-  const [isEditing, setIsEditing] = useState(false); // ¿Estamos en modo borrar?
-
+  const [historyData, setHistoryData] = useState(INITIAL_DATA); 
+  const [searchText, setSearchText] = useState('');
+  const [isEditing, setIsEditing] = useState(false); 
   // 2. LÓGICA DE FILTRADO (Buscador)
   const filteredData = historyData.filter(item => 
     item.title.toLowerCase().includes(searchText.toLowerCase())
@@ -58,9 +57,7 @@ export default function HistoryScreen({ navigation }) {
 
   // 3. LÓGICA DE BORRADO
   const deleteItem = (idToDelete) => {
-    // Animación bonita al borrar
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    // Filtramos la lista para quitar el item con ese ID
     setHistoryData(prevData => prevData.filter(item => item.id !== idToDelete));
   };
 
@@ -69,7 +66,6 @@ export default function HistoryScreen({ navigation }) {
     <TouchableOpacity 
       style={styles.card} 
       activeOpacity={0.7}
-      // Si estamos editando, desactivamos la navegación al detalle para evitar confusiones
       disabled={isEditing}
       onPress={() => navigation.navigate('Detail', { item })}
     >
@@ -84,13 +80,12 @@ export default function HistoryScreen({ navigation }) {
         <Text style={styles.cardDate}>{item.date}</Text>
       </View>
 
-      {/* ICONO DE ACCIÓN (Cambia según el modo) */}
+      {/* ICONO DE ACCION */}
       <TouchableOpacity 
         onPress={() => {
           if (isEditing) {
-            deleteItem(item.id); // Si estamos editando, BORRA
+            deleteItem(item.id); 
           } else {
-            // Si no, aquí podrías abrir un menú de opciones (future feature)
           }
         }}
         style={styles.actionIconArea}

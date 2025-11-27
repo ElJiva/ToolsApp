@@ -5,33 +5,28 @@ import {
   View, 
   TouchableOpacity, 
   Dimensions,
-  Image // Si tuvieras una imagen real, usarías esto
+  Image 
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
-const PRIMARY_COLOR = '#3B82F6'; // El azul brillante de tu app
+const PRIMARY_COLOR = '#F59E0B'; 
 
 export default function HomeScreen({ navigation }) {
   
   const handleStart = () => {
-    // Usamos 'replace' en lugar de 'navigate'.
-    // Esto reemplaza la pantalla actual en el historial, 
-    // así el usuario no puede volver aquí con el botón "atrás".
     navigation.replace('Scanner');
   };
 
   return (
     <View style={styles.container}>
       
-      {/* Contenido Superior (Icono y Textos) */}
+      {}
       <View style={styles.contentContainer}>
         
-        {/* Placeholder del Logo/Imagen Central */}
+        {}
         <View style={styles.logoContainer}>
-            {/* Si tuvieras tu imagen: 
-            <Image source={require('../../assets/tu-imagen.png')} style={styles.logoImage} /> 
-            */}
+            {}
             <MaterialCommunityIcons name="tools" size={100} color="white" />
         </View>
         
@@ -59,29 +54,30 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F1218', // Fondo oscuro principal
+    backgroundColor: '#0F1218', 
     paddingHorizontal: 30,
-    justifyContent: 'space-between', // Distribuye espacio entre contenido y botón
+    justifyContent: 'space-between', 
     paddingVertical: 50,
   },
   contentContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -50, // Un pequeño ajuste para subirlo visualmente
+    marginTop: -50, 
   },
   // Logo Simulado
   logoContainer: {
     width: 180,
     height: 180,
-    backgroundColor: 'rgba(59, 130, 246, 0.1)', // Azul muy transparente
+    backgroundColor: 'rgba(59, 130, 246, 0.1)', 
     borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 40,
     borderWidth: 2,
-    borderColor: 'rgba(59, 130, 246, 0.3)', // Borde azul sutil
+    borderColor: 'rgba(59, 130, 246, 0.3)', 
   },
+
   // Textos
   title: {
     fontSize: 32,
@@ -93,11 +89,12 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: '#8E9BB3', // Gris azulado claro
+    color: '#8E9BB3', 
     textAlign: 'center',
     paddingHorizontal: 20,
     lineHeight: 24,
   },
+
   // Botón
   bottomContainer: {
     width: '100%',
