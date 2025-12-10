@@ -14,9 +14,8 @@ export default function DetailScreen({ route, navigation }) {
   const toolData = getToolData(item?.title);
 
   return (
-    // Usamos un View normal como contenedor principal (NO ScrollView)
     <View style={{ flex: 1, backgroundColor: "#0F1218" }}>
-      {/* 1. HEADER (Flotante y Fijo) */}
+      {/* 1. HEADER */}
       <View
         style={{
           flexDirection: "row",
@@ -24,7 +23,7 @@ export default function DetailScreen({ route, navigation }) {
           alignItems: "center",
           paddingTop: 50,
           paddingHorizontal: 20,
-          zIndex: 10, // Para que quede encima del modelo
+          zIndex: 10,
           position: "absolute",
           top: 0,
           left: 0,
@@ -38,8 +37,7 @@ export default function DetailScreen({ route, navigation }) {
         <View style={{ width: 40 }} />
       </View>
 
-      {/* 2. ZONA 3D (Fija - Ocupa el 55% de la pantalla) */}
-      {/* Al no estar en un ScrollView, los gestos son puros para el 3D */}
+      {/* 2. ZONA 3D */}
       <View style={{ height: height * 0.55, width: "100%" }}>
         {toolData.model ? (
           <ModelViewer localResource={toolData.model} />
@@ -65,14 +63,14 @@ export default function DetailScreen({ route, navigation }) {
         )}
       </View>
 
-      {/* 3. ZONA DE INFORMACIÓN (Scrollable - Ocupa el resto) */}
+      {/* 3. ZONA DE INFORMACIÓN */}
       <View
         style={{
           flex: 1,
           backgroundColor: "#1A1D26",
           borderTopLeftRadius: 30,
           borderTopRightRadius: 30,
-          marginTop: -20, // Efecto solapado leve
+          marginTop: -20,
           paddingHorizontal: 25,
           paddingTop: 30,
         }}
