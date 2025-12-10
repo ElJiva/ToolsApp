@@ -1,5 +1,5 @@
 
-const API_URL = 'http://192.168.1.XX:6767'; //Aqui va el ip de la computadora 
+const API_URL = 'http:/192.168.100.13:5050'; 
 
 export const getImageUrl = (filename) => {
     if (!filename) return null;

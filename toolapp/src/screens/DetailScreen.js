@@ -1,87 +1,106 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import React from "react";
+import { View, Text, Image, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-// Imports de Estilos, Colores y API
-import styles from '../styles/DetailStyles';
-import Colors from '../styles/Colors';
-import { getImageUrl } from '../services/api'; 
-import ModelViewer from '../components/ModelViewer';
+import styles from "../styles/DetailStyles";
+import Colors from "../styles/Colors";
+import ModelViewer from "../components/ModelViewer";
+import { getToolData } from "../constants/ToolAssets";
+
+const { height } = Dimensions.get("window");
 
 export default function DetailScreen({ route, navigation }) {
-  const { item } = route.params || {}; 
-  const toolName = item?.title || "Herramienta";
-  
-
-  const stlUrl = item?.stlFile ? getImageUrl(item.stlFile) : null;
+  const { item } = route.params || {};
+  const toolData = getToolData(item?.title);
 
   return (
-    <View style={styles.container}>
-      
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{padding: 5}}>
+    // Usamos un View normal como contenedor principal (NO ScrollView)
+    <View style={{ flex: 1, backgroundColor: "#0F1218" }}>
+      {/* 1. HEADER (Flotante y Fijo) */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingTop: 50,
+          paddingHorizontal: 20,
+          zIndex: 10, // Para que quede encima del modelo
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+        }}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 5, backgroundColor: "rgba(0,0,0,0.3)", borderRadius: 20 }}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{toolName}</Text>
-        <View style={{width: 40}} />
+        <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>{item?.title || "Detalle"}</Text>
+        <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        
-        {/*VISOR 3D */}
-        <View style={styles.imageContainer}>
-          {stlUrl ? (
-             
-             <View style={{width: '100%', height: '80%'}}>
-                 <ModelViewer url={stlUrl} />
-             </View>
-          ) : (
-             // Si no hay STL, mostramos la imagen por default
-             <Image 
-                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2558/2558162.png' }} 
-                style={styles.toolImage}
-                resizeMode="contain"
-             />
-          )}
-          
-          <Text style={styles.modelTitle}>Modelo 3D</Text>
-          <Text style={styles.modelSubtitle}>
-             {stlUrl ? "Arrastra para rotar y haz pinza para zoom" : "Modelo no disponible"}
-          </Text>
-        </View>
-
-        <View style={styles.bottomSheet}>
-          <View style={styles.dragHandle} />
-          <Text style={styles.categoryTitle}>Información</Text>
-          <Text style={styles.descriptionText}>
-            Herramienta identificada: {toolName}.
-            {stlUrl ? '\nModelo 3D cargado correctamente.' : '\nNo se encontró archivo 3D asociado.'}
-          </Text>
-
-          <View style={styles.featuresList}>
-            <FeatureItem text="Identificación por IA." />
-            <FeatureItem text="Visualización 3D interactiva." />
-            <FeatureItem text="Análisis de geometría." />
+      {/* 2. ZONA 3D (Fija - Ocupa el 55% de la pantalla) */}
+      {/* Al no estar en un ScrollView, los gestos son puros para el 3D */}
+      <View style={{ height: height * 0.55, width: "100%" }}>
+        {toolData.model ? (
+          <ModelViewer localResource={toolData.model} />
+        ) : (
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <Image source={toolData.image} style={{ width: "60%", height: "60%" }} resizeMode="contain" />
           </View>
-        </View>
+        )}
 
-      </ScrollView>
-
-      {/* Botones Flotantes */}
-      <View style={styles.fabContainer}>
-        {}
-        <TouchableOpacity style={[styles.fab, { backgroundColor: Colors.PRIMARY }]}>
-           <Ionicons name="refresh" size={24} color="white" />
-        </TouchableOpacity>
+        {/* Indicador visual flotante */}
+        {toolData.model && (
+          <Text
+            style={{
+              position: "absolute",
+              bottom: 20,
+              alignSelf: "center",
+              color: "rgba(255,255,255,0.5)",
+              fontSize: 12,
+            }}
+          >
+            3D Interactivo
+          </Text>
+        )}
       </View>
 
+      {/* 3. ZONA DE INFORMACIÓN (Scrollable - Ocupa el resto) */}
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#1A1D26",
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          marginTop: -20, // Efecto solapado leve
+          paddingHorizontal: 25,
+          paddingTop: 30,
+        }}
+      >
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={{ width: 40, height: 4, backgroundColor: "#333", alignSelf: "center", borderRadius: 2, marginBottom: 20 }} />
+
+          <Text style={{ fontSize: 24, fontWeight: "bold", color: "white", marginBottom: 10 }}>Información</Text>
+
+          <Text style={{ fontSize: 16, color: "#A0A0A0", lineHeight: 24, marginBottom: 30 }}>{toolData.description}</Text>
+
+          <Text style={{ fontSize: 18, fontWeight: "bold", color: "white", marginBottom: 15 }}>Características</Text>
+
+          <View style={{ gap: 15, paddingBottom: 40 }}>
+            <FeatureItem text="Identificación por IA completada." />
+            <FeatureItem text={toolData.model ? "Modelo 3D interactivo disponible." : "Visualización imagen 2D."} />
+            <FeatureItem text="Análisis de geometría en tiempo real." />
+            <FeatureItem text="Herramienta guardada en historial." />
+          </View>
+        </ScrollView>
+      </View>
     </View>
   );
 }
 
 const FeatureItem = ({ text }) => (
-  <View style={styles.featureRow}>
-    <Ionicons name="checkmark-circle-outline" size={24} color={Colors.PRIMARY} style={{ marginRight: 10 }} />
-    <Text style={styles.featureText}>{text}</Text>
+  <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <Ionicons name="checkmark-circle" size={24} color={Colors.PRIMARY || "#2196F3"} style={{ marginRight: 15 }} />
+    <Text style={{ color: "#E0E0E0", fontSize: 15 }}>{text}</Text>
   </View>
 );

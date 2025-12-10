@@ -1,39 +1,66 @@
-import React, { Suspense } from 'react';
-import { ActivityIndicator, View } from 'react-native';
-import { Canvas, useLoader } from '@react-three/fiber/native';
-import { STLLoader } from 'three-stdlib';
-import { OrbitControls, Stage } from '@react-three/drei/native';
-import Colors from '../styles/Colors';
+import React, { Suspense, useState, useEffect } from "react";
+import { View } from "react-native";
+import { Canvas, useLoader } from "@react-three/fiber/native";
+import { STLLoader } from "three-stdlib";
+import { OrbitControls, Center } from "@react-three/drei/native";
+import { Asset } from "expo-asset";
 
+function Model({ localResource }) {
+  const [uri, setUri] = useState(null);
 
-function Model({ url }) {
-  const geom = useLoader(STLLoader, url);
-  
+  useEffect(() => {
+    async function loadAsset() {
+      if (localResource) {
+        try {
+          const asset = Asset.fromModule(localResource);
+          await asset.downloadAsync();
+          setUri(asset.localUri || asset.uri);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+    loadAsset();
+  }, [localResource]);
+
+  if (!uri) return null;
+
+  const geom = useLoader(STLLoader, uri);
+  geom.center();
+  geom.computeVertexNormals();
+
   return (
-    <mesh geometry={geom} scale={0.05} rotation={[0, 0, 0]}>
-       {/*  */}
-       <meshStandardMaterial color="gray" roughness={0.5} metalness={0.8} />
+    <mesh geometry={geom} scale={1.1}>
+      <meshStandardMaterial color="#A0A0A0" roughness={0.3} metalness={0.5} />
     </mesh>
   );
 }
 
-export default function ModelViewer({ url }) {
+export default function ModelViewer({ localResource }) {
+  if (!localResource) return null;
+
   return (
-    <View style={{ flex: 1, backgroundColor: 'transparent' }}>
-      <Canvas shadows camera={{ position: [0, 0, 100], fov: 50 }}>
-        {/* Luces  para que se vea el objeto */}
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} />
-        
+    <View style={{ flex: 1, backgroundColor: "transparent" }}>
+      <Canvas shadows frameloop="always" dpr={[1, 2]} camera={{ position: [0, 0, 80], fov: 50, near: 1, far: 1000 }}>
+        <ambientLight intensity={1.5} />
+        <directionalLight position={[10, 10, 5]} intensity={2} />
+        <directionalLight position={[-10, -10, -5]} intensity={1} />
+
         <Suspense fallback={null}>
-            {/*  */}
-            <Stage environment={null} intensity={1} contactShadow={false}>
-                 {url ? <Model url={url} /> : null}
-            </Stage>
+          <Center>
+            <Model localResource={localResource} />
+          </Center>
         </Suspense>
-        
-        {/* Permite rotar con el dedo */}
-        <OrbitControls enableZoom={true} />
+
+        <OrbitControls
+          makeDefault
+          enablePan={false}
+          enableZoom={true}
+          enableRotate={true}
+          enableDamping={false}
+          minDistance={20}
+          maxDistance={150}
+        />
       </Canvas>
     </View>
   );
