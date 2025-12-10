@@ -20,17 +20,20 @@ export default function HistoryScreen({ navigation }) {
   const fetchData = async () => {
     try {
       const data = await getHistory();
-      const formattedData = data.map((item) => ({
+
+      const sortedData = data.sort((a, b) => b.id - a.id);
+
+      const formattedData = sortedData.map((item) => ({
         id: item.id.toString(),
         title: item.herramienta_detectada,
         date: item.fecha,
         confidence: item.confianza,
         icon: getIconName(item.herramienta_detectada),
-
         stlFile: item.archivo_stl,
         imageFile: item.imagen_frontend,
       }));
-      setHistoryData(formattedData.reverse());
+
+      setHistoryData(formattedData);
     } catch (error) {
       console.error(error);
     } finally {
